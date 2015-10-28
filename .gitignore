@@ -11,3 +11,13 @@
 # produced vignettes
 vignettes/*.html
 vignettes/*.pdf
+
+# database jar drivers 
+*.jar
+
+# cache
+*_cache/
+
+# generated files, except for markdown (we want markdown because displays nicely in GitHub)
+*.html
+*.pdf
