@@ -1,5 +1,5 @@
 
-*This documentation is embedded from Depsy's GitHub Readme, and is still in progress. Feel free to submit a pull request with updates and changes*
+*This documentation is still in progress. Feel free to submit a pull request with updates and changes*
 
 
 
