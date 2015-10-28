@@ -1,15 +1,13 @@
 ---
 output:
   html_document:
-    keep_md: yes
-    pandoc_args:
-    - +RTS
-    - -K10000000
-    - -RTS
-    toc: yes
-    toc_depth: 4
-  pdf_document:
-    toc: yes
+    keep_md: true
+    pandoc_args: [
+      "+RTS", "-K10000000",
+      "-RTS"
+    ]
+    toc: true
+    toc_depth: 4    
 ---
 
 *This documentation is still in progress. Feel free to submit a pull request with updates and changes*
