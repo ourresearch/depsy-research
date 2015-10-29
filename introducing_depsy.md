@@ -1,5 +1,18 @@
+# Depsy
+Jason Priem, Heather Piwowar  
 
 *This documentation is still in progress. Feel free to submit a pull request with updates and changes*
+
+# Abstract
+
+*Abstract goes here*
+
+# Introduction
+
+This is the intro.
+
+
+
 
 
 
@@ -104,7 +117,7 @@ We've got big plans to improve the way we find literature mentions. We're going 
 
 ## Person impact
 
-Depsy calculates transitive credit for the authors of research software.  We do this by accumulating the impact of the research software they've contributed to, in proportion to the size of the contribution they've made to each project. 
+Depsy calculates transitive credit for the authors of research software.  We do this by accumulating the impact of the research software they've contributed to, in proportion to the size of the contribution they've made to each project. For more on transitive credit, see [@greycite35680].
 
 ### Person impact: authorship
 + The author names are parsed from the author bylines in the PyPI and CRAN metadata
@@ -145,4 +158,10 @@ It is a lot of percentiles, we agree.  :)  The data is very skewed, with differe
 - self citation happens. This can affect download numbers, but also imports and especially literature mentions.
 - we do our best to guess whether a package is is_academic.  It's hard to know what this is for R; right now we consider all R packages to be academic.  
 - download numbers are inflated by use of projects on CI servers; a download isn't necessarily by a person.
+
+# References
+
+plus several more, we're still working on this bit...
+
+
 
