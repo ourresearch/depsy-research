@@ -86,9 +86,17 @@ all_packages = dbGetQuery(my_db, "
 dp_all = tbl_df(all_packages)
 glimpse(dp_all)
 
-dp_aca %>% group_by(host) %>% ggplot(aes(num_downloads, pagerank, color=host)) + 
-    geom_point(alpha=0.5) + 
-    scale_y_log10() + scale_x_log10(labels=comma)
+# dp_aca %>% group_by(host) %>% ggplot(aes(num_downloads, pagerank, color=host)) + 
+#    geom_point(alpha=0.5) + 
+#    scale_y_log10() + scale_x_log10(labels=comma)
+
+# dp_aca %>% group_by(host) %>% ggplot(aes(num_downloads, num_citations, color=host)) + 
+#    geom_point(alpha=0.5) + 
+#    stat_smooth_func(geom="text",method="lm",hjust=0,parse=TRUE)  +
+#    scale_y_log10() + scale_x_log10(labels=comma)
+
+# dp_aca %>% ggplot(aes(x=num_downloads, y=pagerank, colour=host)) + geom_point(alpha=.2) + geom_rug(alpha=0.1) + scale_y_log10() + scale_x_log10() + geom_smooth(method="lm", formula=y~x)
+
 ```
 
 # Abstract
