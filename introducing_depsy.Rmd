@@ -1,12 +1,8 @@
 ---
-title: 'Depsy: the software that we built'
+title: 'Depsy: valuing the software that powers science'
 author: "Jason Priem, Heather Piwowar"
 csl: mee.csl
 output:
-  md_document:
-    variant: markdown_github
-    toc: true
-    toc_depth: 4
   html_document:
     fig_caption: yes
     force_captions: yes
@@ -17,6 +13,8 @@ output:
     - +RTS
     - -K10000000
     - -RTS
+  md_document:
+    variant: markdown_github
   pdf_document:
     fig_caption: yes
     keep_md: yes
@@ -103,17 +101,19 @@ glimpse(dp_all)
 
 ```
 
-# Abstract
-
-*Abstract goes here*
-
 # Introduction
+
+Depsy helps build the software-intensive science of the future by promoting credit for software as a fundamental building block of science.
 
 Depsy finds the impact of research software **packages** written in Python and R, and also impact of the **people** who write it.
 
 R is a language for doing statistics.  As such, almost all of its packages are written by academics, for academics, to do reasearch--so we consider all R software on Depsy to be research software. We cover the *`r dp_aca %>% filter(host=='cran') %>% nrow()`* R software packages available on [CRAN](https://cran.r-project.org/web/packages/), the main library repository for R.
 
 Python is a more general purpose programming language.  We try to establish whether a given Python package is research software by searching its metadata (package name, description, tags) for researchy-words (see [code on GitHub](https://github.com/Impactstory/depsy/blob/870c85ee4598643f496bca76e5a7dff994e53837/models/academic.py)). We cover all *`r dp_all %>% filter(host=='pypi') %>% nrow()`* active Python packages on [PyPI](http://pypi.python.org), Python's main package repository; of those, we count *`r dp_aca %>% filter(host=='pypi') %>% nrow()`* as research software.
+
+## Related work
+
+related work goes here
 
 ## Package impact
 
@@ -242,6 +242,19 @@ Finally, we calculate an overall person-level score.  We get this by averaging t
 
 It is a lot of percentiles, we agree.  :)  The data is very skewed, with different distributions across the subscores.  Stay tuned for blog posts exploring this in more detail.
 
+## Case studies
+
+### obspy
+
+TODO
+
+### GDAL
+
+[GDAL](http://depsy.org/package/python/GDAL) is a geoscience library. Depsy finds this cool NASA-funded [ice map paper](http://www.the-cryosphere.net/8/1509/2014/tc-8-1509-2014.html) that mentions GDAL without formally citing it. Also check out key author [Even Rouault](http://depsy.org/package/python/GDAL): the project commit history demonstrates he deserves 27% credit for GDAL, even though he's overlooked in more [traditional credit systems](http://gdal.org/credits.htm).
+
+### a third one (maybe something with hadley wickam)
+
+TODO
 
 ## Scope details and limitations
 
@@ -252,6 +265,10 @@ It is a lot of percentiles, we agree.  :)  The data is very skewed, with differe
 - self citation happens. This can affect download numbers, but also imports and especially literature mentions.
 - we do our best to guess whether a package is is_academic.  It's hard to know what this is for R; right now we consider all R packages to be academic.  
 - download numbers are inflated by use of projects on CI servers; a download isn't necessarily by a person.
+
+# Data availability
+
+All Despy data is available for reuse through our API (see "View in Api" buttons on the package, person, and tag pages) and also though direct access to our read-only postgres database.  Connection details area available in the knitr source for this document.
 
 # Funding
 
