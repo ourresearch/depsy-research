@@ -122,7 +122,7 @@ We've got big plans to improve the way we find literature mentions. We're going 
 
 ## Person impact
 
-Depsy calculates transitive credit for the authors of research software.  We do this by accumulating the impact of the research software they've contributed to, in proportion to the size of the contribution they've made to each project. For more on transitive credit, see [Katz and Smith 2014]("http://arxiv.org/abs/1407.5117").
+Depsy calculates transitive credit for the authors of research software.  We do this by accumulating the impact of the research software they've contributed to, in proportion to the size of the contribution they've made to each project. For more on transitive credit, see [Katz and Smith 2014](http://arxiv.org/abs/1407.5117).
 
 ### Authorship
 + The author names are parsed from the author bylines in the PyPI and CRAN metadata
