@@ -3,6 +3,10 @@ title: 'Depsy: the software that we built'
 author: "Jason Priem, Heather Piwowar"
 csl: mee.csl
 output:
+  md_document:
+    variant: markdown_github
+    toc: true
+    toc_depth: 4
   html_document:
     fig_caption: yes
     force_captions: yes
@@ -15,9 +19,9 @@ output:
     - -RTS
   pdf_document:
     fig_caption: yes
+    keep_md: yes
     keep_tex: yes
     latex_engine: xelatex
-bibliography: references.bib
 ---
 
 *This documentation is still in progress. Feel free to submit a pull request with updates and changes*
@@ -138,7 +142,7 @@ How do we apply it to software?  There are three steps, which are covered in det
 
 We'd like to find absolutely all of the code that uses a research software library.  Alas this is impossible -- most software lives only on private harddrives and servers, so we don't know that it exists, let alone that it depends on a given software library.
 
-That said, there's great news: more and more code is becoming Open Source, available for anyone to browse and search.  GitHub is by far the largest such repository, with over 9 million users and over 21.1 million repositories `r citep("https://en.wikipedia.org/wiki/GitHub")`.  Finding dependencies on GitHub serves as a proxy for all dependencies. 
+That said, there's great news: more and more code is becoming Open Source, available for anyone to browse and search.  GitHub is by far the largest such repository, with over 9 million users and over 21.1 million repositories [[wikipedia]("https://en.wikipedia.org/wiki/GitHub")].  Finding dependencies on GitHub serves as a proxy for all dependencies. 
 
 Luckily the dependency information for software libraries is also available and searchable, so we are able to add to our sample all of the times that libraries in the PyPI and CRAN networks depend on other libraries.
 
@@ -207,7 +211,7 @@ We've got big plans to improve the way we find literature mentions. We're going 
 
 ## Person impact
 
-Depsy calculates transitive credit for the authors of research software.  We do this by accumulating the impact of the research software they've contributed to, in proportion to the size of the contribution they've made to each project. For more on transitive credit, see `r citep("http://arxiv.org/abs/1407.5117")`.
+Depsy calculates transitive credit for the authors of research software.  We do this by accumulating the impact of the research software they've contributed to, in proportion to the size of the contribution they've made to each project. For more on transitive credit, see [Katz and Smith 2014]("http://arxiv.org/abs/1407.5117").
 
 ### Authorship
 + The author names are parsed from the author bylines in the PyPI and CRAN metadata
@@ -253,10 +257,3 @@ It is a lot of percentiles, we agree.  :)  The data is very skewed, with differe
 
 Depsy is funded by an [EAGER grant (number 1346575)](http://blog.impactstory.org/impactstory-awarded-300k-nsf-grant/) from the National Science Foundation.
 
-# References
-
-```{r, warning=FALSE, message=FALSE, echo=FALSE} 
-  write.bibtex(file="references.bib")
-```
-
-*plus more -- still adding references.... *
