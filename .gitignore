@@ -21,3 +21,4 @@ vignettes/*.pdf
 # generated files, except for markdown (we want markdown because displays nicely in GitHub)
 *.html
 *.pdf
+cache
