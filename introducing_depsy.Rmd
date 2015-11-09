@@ -111,9 +111,9 @@ glimpse(dp_all)
 
 Today's cutting-edge science is built on an array of specialist research software. This research software is often as important as traditional scholarly papers--but it's not treated that way when it comes to funding and tenure. There, the traditional publish-or-perish, show-me-the-Impact-Factor system still rules.
 
-We need to fix that. We need to provide meaningful incentives for the scientist-developers who make important research software, so that we can keep doing important, software-driven science.
+We need to fix that. We need to provide meaningful incentives for the [scientist-developers](http://dirkgorissen.com/2012/03/26/the-researcher-programmer-a-new-species/) who make important research software, so that we can keep doing important, software-driven science.
 
-Lots of things have to happen to support this change. Depsy is a shot at making one of those things happen: a system that tracks the impact of software in *software-native ways*.
+[Lots of things have to happen](http://rev.oxfordjournals.org/content/early/2015/07/26/reseval.rvv014.full) to support this change. Depsy is a shot at making one of those things happen: a system that tracks the impact of software in *software-native ways*.
 
 That means not just counting up citations to a hastily-written paper *about* the software, but actual mentions of *the software itself* in the literature. It means looking how software gets reused by other software, even when it's not cited at all. And it means understanding the full complexity of software authorship, where one project can involve hundreds of contributors in multiple roles that don't map to traditional paper authorship.
 
@@ -224,21 +224,43 @@ There are a few steps to this.
 So, after all this conditioning, we can see that a package with a PageRank Score of 0 isn't depended on by any code, whereas a PageRank Score of 1000 is depended on heavily by a lot of projects, including a lot of important projects. Even after the transformation, the value are quite skewed (TODO: plot).
 
 
-### Citations
+### Literature reuse
 
-We get software literature mentions by searching the full text of the literature hosted in two places: Europe PMC and ADS (which includes arXiv and other things).  Because these sources have different abilities, we search differently in both places.
+If software is making an impact on research, we'd expect to see it cited in the literature. And it is. But it's cited haphazardly--instead of formal citation, we often see things like "we used foo library for the figures" in papers.  In fact, Howison and Bullard find [only around a third of software mentions are formal citations](http://onlinelibrary.wiley.com/doi/10.1002/asi.23538/abstract). These informal citations don't show up in citation indexes, and so it's hard to trace--and hard for authors to get credit.
+
+One solution is to write "software papers" that act as hooks for citations instead of the software itself. This doesn't try to change the current paper-oriented publication system, but rather leverage it. However, often these papers don't get cited either, and even more often they don't get written (and why should they? software shouldn't have to pretend to be something else to be cited). So while this approach has value, it's too mired in the past.
+
+A different, more radical solution is to mint DOIs for software, counting on the symbolic value "it has a DOI" to encourage better citation rates and better traceability of citation. This anticipates a new, more diverse publication landscape in which software and traditional papers coexist as first-class citizens. However, though this may pay off in the long term, for now software DOIs are uncommon--and often remain uncited even when they exist. While this approach has value, it's too dependent on the future.
+
+A third approach can combine the virtues of both of these: text-mining the literature to track mentions that indicate software reuse. This works within the currunt citation culture, but also treats software as the first-class scholarly output it deserves to be.
+
+Depsy implements a proof-of-concept version of this third approach, searching the full text of literature hosted in two places: Europe PMC and ADS (which includes arXiv, some other OA corpora, and a few toll-access sources).  Because these sources have different abilities, we search differently in both places.
 
 #### Europe PMC
 
-We search for the name of the library, and the name of the library ANDed with "python" or "r statistical".  If the search has at least 20% of hits with the programming-language specific filter, we consider it searchable and count all of the mentions as valid citations.  If the search does not have an adequate proportion of hits with the language filter we consider it too generic a word for sufficient recall on its own, and instead just look up its PyPI URL and GitHub url (if known).  
+To find mentions of libraries, we simply use Europe PMC's (excellent) API to search for the name of the library. However, many packages have names that give false positives: naming your project "THE" should not result in millions of "uses." 
+
+So, we require names be quite distinctive before we accept search matches as accurate. To do this, we do a "filtered search," looking for mentions of each package AND "python" or "r statistical". These are assumed to be legitimate mentions. We then do the search again, but this time with the package name by itself, with no filter.  
+
+Package name with commonly-used words (```requests```, ```plot```, etc) have very small numbers of filtered mentions compared to overall mentions, while packages with uncommon names (```astropy```, ```rWBclimate```) have more similar counts whether filtered or not. We discard search counts when filtered searches deliver less than 20% as many hits as unfiltered. In those cases, we instead just look up its PyPI URL and GitHub url (if known), which is much more precise (at the cost of greater recall).
 
 #### ADS
 
-We found ADS has poor precision when looking up software names, because it ignores puncutation.  This results in many incorrect matches, where it finds software names inside equations, for example.  To handle this we've sacrificed recall for precision, making the queries much more specific -- so for the r package landlab, basically  ("landlab library" OR "landlab open-source") etc.  This still results in many incorrect hits for common-word package names, so we use the ratio approach described above for PMC to identify and exclude these.  The fallback for common word package names for ADS is simply to return 0 hits because the URL searches we use for PMC are not precise enough.
+We found ADS has poor precision when looking up software names, because it ignores puncutation.  This results in many incorrect matches, where it finds software names inside equations, for example.  
+
+So for ADS we instead search for a specific set of phrases that more conclusively identify software mentions. You can see an example in this search for [ADS mentions of the Astropy library](http://labs.adsabs.harvard.edu/adsabs/search/?q=(%20(=%22import%20astropy%22%20OR%20=%22github%20com%20astropy%22%20OR%20=%22pypi%20python%20org%20astropy%22%20OR%20=%22available%20in%20the%20astropy%20project%22%20OR%20=%22astropy%20a%20community-developed%22%20OR%20=%22library%20astropy%22%20OR%20=%22libraries%20astropy%22%20OR%20=%22package%20astropy%22%20OR%20=%22packages%20astropy%22%20OR%20=%22astropy%20package%22%20OR%20=%22astropy%20packages%22%20OR%20=%22astropy%20library%22%20OR%20=%22astropy%20libraries%22%20OR%20=%22astropy%20python%22%20OR%20=%22astropy%20software%22%20OR%20=%22astropy%20api%22%20OR%20=%22astropy%20coded%22%20OR%20=%22astropy%20new%20open-source%22%20OR%20=%22astropy%20open-source%22%20OR%20=%22open%20source%20software%20astropy%22%20OR%20=%22astropy%20modeling%20frameworks%22%20OR%20=%22astropy%20modeling%20environment%22%20OR%20=%22modeling%20framework%20astropy%22%20OR%20=%22astropy:%20sustainable%20software%22%20OR%20=%22astropy%20component-based%20modeling%20framework%22)%20-author:%22astropy%22)&year_from=1997&month_to=&year_to=2016). Despite a great deal of testing various phrase combinatinos, this approach still results in many incorrect hits for common-word package names, so we use the ratio approach described above for PMC to identify and exclude these, improving accuracy.  The fallback for common word package names for ADS is simply to return 0 hits because the URL searches we use for PMC are not precise enough. 
+
+#### Limitations
+
+This approach has several important limitations: 
+
+* most obviously, __Depsy finds way fewer mentions than Google Scholar does__. That's because we only mine a very small segment of the literature compared to Google Scholar (GS). However, Depsy's data is valuable because it often finds mentions that GS does not, so can be used to improve GS counts. Moreover, Depsy's counts are based on open data, so they can be automatically gathered, remixed, and reused in other applications. You can't do that with GS data, which is released under very restrictive terms of use. Finally, Depsy evaluates software mentions more specifically than GS, using the heuristics described above, which in some cases results in greater accuracy.
+* Depsy does not find citations to traditional software papers (unless their titles include the name of the software).
+* Depsy's heuristic-based approach can and does make errors in both precision and recall.
 
 #### Future work
 
-We've got big plans to improve the way we find literature mentions. We're going to include papers that often serve as proxies for software name mentions, particularly those identified within CRAN as the author's prefered attribution. We're also going to incorporate more network information, using not just how many people have cited something, but *who*. Eventually we'll incorporate citation information into the software reuse network, building a comprehensive, heterogeneous impact map. Finally, we'll be working with publishers to text-mine larger subsets of the research literature.
+Although Depsy's text-mining approach to assessing literature impact has some big holes that restrict it to primarily proof-of-concept use right now, it's got a lot of potential, and we've got big plans of future improvements. We're going to include papers that often serve as proxies for software name mentions, particularly those identified within CRAN as the author's prefered attribution. We're also going to incorporate more network information, using not just how many people have cited something, but *who*. Eventually we'll incorporate citation information into the software reuse network, building a comprehensive, heterogeneous impact map. Finally, we'll be working with publishers to text-mine larger subsets of the research literature.
 
 
 
@@ -306,4 +328,9 @@ Everything in Depsy is open, and we encourage reuse of the data and code. You ca
 # Funding
 
 Depsy is funded by an [EAGER grant (number 1346575)](http://blog.impactstory.org/impactstory-awarded-300k-nsf-grant/) from the National Science Foundation.
+
+# Key references
+
+We're still working on this part. But here are a few papers that are great reading on this topic, and informa a lot of what we're doing.
+
 
