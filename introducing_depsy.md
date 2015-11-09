@@ -1,5 +1,5 @@
 # Depsy: valuing the software that powers science
-Jason Priem, Heather Piwowar  
+Heather Piwowar and Jason Priem  
 
 *This documentation is still in progress. Feel free to submit a pull request with updates and changes*
 
@@ -14,7 +14,7 @@ Jason Priem, Heather Piwowar
 
 # Introduction
 
-Today's cutting-edge science is built on an array of specialist research software. This research software is often as important as traditional scholarly papers--but it's not treated that way when it comes to funding and tenure. There, the traditional publish-or-perish, show-me-the-Impact-Factor system still rules.
+Today's cutting-edge science is built on an array of specialist research software. This research software is often as important as traditional scholarly papers--[but it's not treated that way when it comes to funding and tenure](http://sciencecodemanifesto.org/). There, the traditional publish-or-perish, show-me-the-Impact-Factor system still rules.
 
 We need to fix that. We need to provide meaningful incentives for the [scientist-developers](http://dirkgorissen.com/2012/03/26/the-researcher-programmer-a-new-species/) who make important research software, so that we can keep doing important, software-driven science.
 
@@ -29,7 +29,21 @@ Given that, it's not a question of *if* research software becomes a first-class 
 
 ## Related work
 
-related work goes here
+*This section is very much still in progress! We're missing a lot of stuff. If you think your paper/app/thing should be mentioned here, submit a pull request and we'll put it in.*
+
++ There are a few commercial services (http://libraries.io, https://www.versioneye.com) that track dependencies. These are missing a focus on research software, and also find fewer dependencies then they should.
++ There are several smaller attempts to catalog and understand PyPI, including
+    + A browsable and searchable interface on top of PyPI: http://pydoc.net/.
+    + A ranking of most impactful PiPI projects at http://pypi-ranking.info. Only uses download information though.
+    + Maps of the PyPI dependency graph: [this blog post](https://ogirardot.wordpress.com/2013/01/05/state-of-the-pythonpypi-dependency-graph/), 
++ Similarly, there are several projects analyzing CRAN and the R dependency graph:
+    + https://github.com/metacran/cranlogs.app provides an API on CRAN download data.
+    + Several blog posts and presentations on visualizing the CRAN dependency graph, including [this one](http://www.r-bloggers.com/differences-in-the-network-structure-of-cran-and-bioconductor/) and [this one](http://librestats.com/2012/05/17/visualizing-the-cran-graphing-package-dependencies/)
+    + several apps to provide better interface to CRAN, with some impact information including http://www.crantastic.org/ and https://mran.revolutionanalytics.com/packages/ 
+    + There've been a few efforts to make systems that assess the scholarly impact of code. http://sciencetoolbox.org/ is one of the best.
++ There's a lot of writing about this. TODO add lots of it. 
+    + James Howison's work is a good start
+    + Dan Katz' work about transitive credit
 
 ## Coverage
 
@@ -222,11 +236,11 @@ TODO
 
 [GDAL](http://depsy.org/package/python/GDAL) is a geoscience library. Depsy finds this cool NASA-funded [ice map paper](http://www.the-cryosphere.net/8/1509/2014/tc-8-1509-2014.html) that mentions GDAL without formally citing it. Also check out key author [Even Rouault](http://depsy.org/package/python/GDAL): the project commit history demonstrates he deserves 27% credit for GDAL, even though he's overlooked in more [traditional credit systems](http://gdal.org/credits.htm).
 
-### a third one (maybe something with hadley wickam)
+### a third one
 
 TODO
 
-## Scope details and limitations
+## Known limitations
 
 - we get contribution/commit information for packages hosted on GitHub.  We don't yet get contribution information from BitBucket or any other place where package contributor information might be stored.  We gather information on only the first 100 committers. 
 - we're missing GitHub links for many packages, which unfortunately means we are missing their detailed contributor/commit information. It's surprising how many packages have a GitHub repo but do not link to it in the package metadata. We attempted to link more by automatically comparing the contents of setup.py files on github and PyPI, but this unfortuantely provided many false matches so we aren't including those links until we can improve the recall.
