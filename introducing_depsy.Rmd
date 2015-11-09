@@ -266,19 +266,29 @@ Although Depsy's text-mining approach to assessing literature impact has some bi
 
 ## Person impact
 
-Depsy calculates transitive credit for the authors of research software.  We do this by accumulating the impact of the research software they've contributed to, in proportion to the size of the contribution they've made to each project. For more on transitive credit, see [Katz and Smith 2014](http://arxiv.org/abs/1407.5117).
+There are lots of ways to represent differing contributions among authors of a paper, including [author order](http://www.phdcomics.com/comics/archive.php?comicid=562), corresponding authorship, acknowledgements, and more explicit contribution statements.
+
+Representation of software authorship has evolved, for the most part, seperately. So if we want to look at software authorship in an academic context, we need to translate software-native authorship representations into something academics can understand and work with.
+
+Depsy does this by calculating transitive credit for the authors of research software.  That means we look at the impact of the research software they've contributed to, times the size of the contribution they've made to each project, summed accross everything they've worked on. For more on transitive credit, see [Katz and Smith 2014](http://arxiv.org/abs/1407.5117).
 
 ### Authorship
+
+First, we calculate the authors of software: 
+
 + The author names are parsed from the author bylines in the PyPI and CRAN metadata
-+ Links between packages and GitHub repositories were identified using metadata in the PyPI and CRAN as well as manual searching (TODO: check if we ended up using any other methods)
-+ For each Package with an associated GitHub repository, we augment the author list with the GitHub owner and GitHub commiters.  We get these using the GitHub api.  We consider an author identicial when they have the same email address, github credentials, or, barring that, identical name. 
++  If the package lists its GitHub repo, we associate the two. We also use some automated methods to connect GitHub repos with CRAN and PyPI packages where they aren't explicitly made in the package metadata. Finally, we manually inspect important packages and connect them with GitHub repos using Google searches.
++ For each package that has an associated GitHub repository, we augment the author list with the GitHub owner and GitHub commiters.  We get these using the GitHub api.  We consider an author identicial when they have the same email address or github credentials. We also parse their human names and consider people identical when they have matching first and last names. 
 + Within a given project, authors are deduplicated using identical first and last names, even if they have different email addresses
 
 ### Contribution-level quantification
+
+Once we have a package's authors, we figure out their respective levels of contribution to the project:
+
 + GitHub committers assigned a contribution-level proportional to their proportion of the software commits
 + Authors who aren't GitHub committers assigned contribution-level equal to that of the most-contributing GitHub committer
 + GitHub owners are assigned a token 1% contribution-level
-+ Credits are weighted such that the contribution-level assigned across all contributors on a Package sums to 1.
++ Credits are weighted such that the contribution-level assigned across all contributors on a package sums to 1.
 
 
 ### Component scores
@@ -295,7 +305,7 @@ The result of the calculations to this point is that each author has three perce
 
 Finally, we calculate an overall person-level score.  We get this by averaging the three componenet subscore percentiles, then, yes, you guessed it, then taking the percentile of *that* across all people.
 
-It is a lot of percentiles, we agree.  :)  The data is very skewed, with different distributions across the subscores.  Stay tuned for blog posts exploring this in more detail.
+It is a lot of percentiles, we agree.  :)  We tried several approaches, but ended up with percentiles mostly because 1) the data is very skewed, with different distributions across the subscores and 2) it provides instantly-accessible context for users of the scores.  Stay tuned for blog posts exploring this in more detail.
 
 ## Case studies
 
@@ -313,13 +323,13 @@ TODO
 
 ## Scope details and limitations
 
-- we get contribution/commit information for packages hosted on GitHub.  We don't yet get contribution information from BitBucket or any other place where package contributor information might be stored.  We gather information on the first 100 committers. 
-- we're missing GitHub links for many packages, which unfortunately means we are missing their detailed contributor/commit information.  We are currently finding links to GitHub that are included in PypI and Cran metadata when the link is to a GitHub repo, but missing it when it is to a GitHub.io page.  We've also added some manually.  We attempted to link more though the contents of setup.py files on github, but this unfortuantely provided many false matches so we aren't including those links until we can improve the recall.
-- we look for dependency information on all python and R GitHub repositories created before Jan 1 2015 (when the GitHub API changed, and Google Big Query changed their GitHub data structure).  We don't yet search BitBucket or any other code repositories.
+- we get contribution/commit information for packages hosted on GitHub.  We don't yet get contribution information from BitBucket or any other place where package contributor information might be stored.  We gather information on only the first 100 committers. 
+- we're missing GitHub links for many packages, which unfortunately means we are missing their detailed contributor/commit information. It's surprising how many packages have a GitHub repo but do not link to it in the package metadata. We attempted to link more by automatically comparing the contents of setup.py files on github and PyPI, but this unfortuantely provided many false matches so we aren't including those links until we can improve the recall.
+- we look for dependency information on all python and R GitHub repositories created before Jan 1 2015 (when the GitHub API changed, and Google Big Query changed their GitHub data structure).  
 - we include active packages, which means we've deleted those without source code available on CRAN/pypi, or in the case of pypi libraries with fewer than 50 downloads (affects about 100 packages).
-- self citation happens. This can affect download numbers, but also imports and especially literature mentions.
-- we do our best to guess whether a package is is_academic.  It's hard to know what this is for R; right now we consider all R packages to be academic.  
-- download numbers are inflated by use of projects on CI servers; a download isn't necessarily by a person.
+- We count self citations and self-imports. Depending on how you look at it, this is a feature of a bug. Either way, it can have a significant affect, especially when dealing with low *n* as we often are.
+- we do our best to guess whether a package is a research package or not. Sometimes we get it wrong. Also, it's hard to know what this is for R; right now we consider all R packages to be academic.  
+- download numbers are notoriously imperfect. They are inflated by automatic downloads (continuous integration servers are a chief culprit) and deflated by downloading from mirrors, among other sources of flakiness.
 
 # Data availability
 
