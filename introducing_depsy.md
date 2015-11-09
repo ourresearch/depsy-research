@@ -1,7 +1,7 @@
 # Depsy: valuing the software that powers science
 Heather Piwowar and Jason Priem  
 
-*This documentation is still in progress. Feel free to submit a pull request with updates and changes*
+*This paper is still in progress. Feel free to submit a pull request with updates and changes*
 
 
 
