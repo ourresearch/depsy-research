@@ -42,7 +42,7 @@ Python is a more general purpose programming language.  We try to establish whet
 
 ## Package impact
 
-Depsy calculates impact along three dimensions (and a fourth, coming later, that will capture social signals like GitHub watchers and Stack Overflow discussions). The overall impact score of a package is calculated as the average of these three: **downloads**, **software reuse**, and **literature mentions**. 
+Depsy calculates impact along three dimensions (and a fourth, coming later, that will capture social signals like GitHub watchers and Stack Overflow discussions). The overall impact score of a package is calculated as the average of these three: **downloads** from software repositories, **software reuse** via reverse dependencies, and **literature reuse** via mentions within papers. 
 
 ### Downloads
 
@@ -51,13 +51,19 @@ Gathering download statistics is easy.  We gathered monthly download numbers for
 
 ### Software reuse
 
-Quantifying software reuse isn't quite as easy, but it's really cool and important :)
+Quantifying software reuse is less easy.
 
-The goal is a number that measures how much a library is depended on by other code -- a number that goes up when a library is depended on by more projects, when it is a dominant dependency the projects, and when it is depended on by projects that are itselves a big deal.  
+The main way software is reused by other software is by being *imported*. For instance, let's say I'm doing a project in R that tracks change in something over time. I end up working with dates a lot (yesterday, a year ago, March 21 1981, and so on). Out of the box, R's support for this is only so-so. I could write a bunch of code to improve it, but instead I'll *import* Hadley Wickham's very nice ```lubridate``` library. Now ```lubridate`` is a *dependency* of my software, because I depend on it. I can reuse his code to make dealing with dates faster and easier. It's a bit like citation on steroids.
 
-Luckily a metric that captures these measures of importance in a network has already been invented: PageRank.  PageRank was Google's first metric for assessing the importance of a web page.  It's a great fit for measuring the importance of a software library in the software-dependency network.
+If we wanted to do a great job of tracking how reused my software was, we'd want to measure three things:
 
-How do we apply it to software?  There are three steps, which are covered in detail below:
+1. How many times my package is imported by other projects. All else equal, more is better.
+2. How crucial those imports are. If you import my software package and *only* my package, that suggests more impact than if you import 100 packages and I'm only one of them.
+3. How important the projects are that reuse my package. I'd rather be depended on by a single Nobel-quality software project than reused in a hundred hacky little throwaway projects.
+
+Here's where it gets cool: there's a metric that measure all three of these together: the famous PageRank algorithm, used by Google to rank the importance of webpages. But where PageRank uses hyperlinks to define the relationships between webpages, we'll use imports to define the relationship between software projects. That'll get us our number to define the true importance of a software package in the dependency network.
+
+To build this number, we'll need three steps, which are covered in detail below:
 
 1. Identify dependencies
 2. Calculate PageRank
