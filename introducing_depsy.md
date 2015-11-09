@@ -1,7 +1,7 @@
 # Depsy: valuing the software that powers science
 Heather Piwowar and Jason Priem  
 
-*This paper is still in progress. Feel free to submit a pull request with updates and changes*
+*This paper is still in progress. Feel free to submit a pull request with updates and changes.*
 
 
 
@@ -131,16 +131,16 @@ We load the dependencies into Python's [igraph](http://depsy.org/package/python/
 
 The last step is to give the PageRank measure some context. PageRank values are really hard to grok by themselves. What does it mean if I tell you a given package has a PageRank of 1.7 * 10<sup>-6</sup>?
 
-So we make the PageRank value more understandable by transforming it into a number between 0 and 1000, and then also providing its percentile compared to other libraries.  
+So we make the PageRank value more understandable by transforming it into a number between 0 and 10, and then also providing its percentile compared to other libraries.  
 
 There are a few steps to this. 
 
 1. We scale scores by the max score in the network by dividing PageRank score by the maximum PageRank score (Python libraries are compared to Python libraries, and R to R).
 2. We taking the log10 transform. The dependency graph exhibits properties of a [scale-free network](https://en.wikipedia.org/wiki/Scale-free_network), including an extremely skewed distribution. The log transform eases interpretation and plotting.
 3. We add an offset so all numbers are positive
-4. We  multiply everything by a scaling factor that places values into the range 0 to 1000.  
+4. We  multiply everything by a scaling factor that places values into the range 0 to 10.  
 
-So, after all this conditioning, we can see that a package with a PageRank Score of 0 isn't depended on by any code, whereas a PageRank Score of 1000 is depended on heavily by a lot of projects, including a lot of important projects. Even after the transformation, the value are quite skewed (TODO: plot).
+So, after all this conditioning, we can see that a package with a PageRank Score of 0 isn't depended on by any code, whereas a PageRank Score of 10.0 is depended on heavily by a lot of projects, including a lot of important projects. Even after the transformation, the values are quite skewed (TODO: plot).
 
 
 ### Literature reuse
@@ -228,17 +228,8 @@ It is a lot of percentiles, we agree.  :)  We tried several approaches, but ende
 
 ## Case studies
 
-### obspy
+TODO.
 
-TODO
-
-### GDAL
-
-[GDAL](http://depsy.org/package/python/GDAL) is a geoscience library. Depsy finds this cool NASA-funded [ice map paper](http://www.the-cryosphere.net/8/1509/2014/tc-8-1509-2014.html) that mentions GDAL without formally citing it. Also check out key author [Even Rouault](http://depsy.org/package/python/GDAL): the project commit history demonstrates he deserves 27% credit for GDAL, even though he's overlooked in more [traditional credit systems](http://gdal.org/credits.htm).
-
-### a third one
-
-TODO
 
 ## Known limitations
 
@@ -257,9 +248,5 @@ Everything in Depsy is open, and we encourage reuse of the data and code. You ca
 # Funding
 
 Depsy is funded by an [EAGER grant (number 1346575)](http://blog.impactstory.org/impactstory-awarded-300k-nsf-grant/) from the National Science Foundation.
-
-# Key references
-
-We're still working on this part. But here are a few papers that are great reading on this topic, and informa a lot of what we're doing.
 
 
