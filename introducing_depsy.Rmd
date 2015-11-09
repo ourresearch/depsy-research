@@ -139,7 +139,8 @@ Given that, it's not a question of *if* research software becomes a first-class 
     + There've been a few efforts to make systems that assess the scholarly impact of code. http://sciencetoolbox.org/ is one of the best.
 + There's a lot of writing about this. TODO add lots of it. 
     + James Howison's work is a good start
-    + Dan Katz' work about transitive credit
+    + Dan Katz' work about transitive credit (Dan is happy to help - let him know what you want from him)
+    + Another question is what to count - see https://danielskatzblog.wordpress.com/2015/10/29/software-metrics-what-to-count-and-how/  For example, Dan thinks it's important to count actual usage more than downloads, though this can be orthogonal to reuse.
 
 ## Coverage
 
@@ -163,7 +164,7 @@ Gathering download statistics is easy.  We gathered monthly download numbers for
 
 Quantifying software reuse is less easy.
 
-The main way software is reused by other software is by being *imported*. For instance, let's say I'm doing a project in R that tracks change in something over time. I end up working with dates a lot (yesterday, a year ago, March 21 1981, and so on). Out of the box, R's support for this is only so-so. I could write a bunch of code to improve it, but instead I'll *import* Hadley Wickham's very nice ```lubridate``` library. Now ```lubridate`` is a *dependency* of my software, because I depend on it. I can reuse his code to make dealing with dates faster and easier. It's a bit like citation on steroids.
+The main way software is reused by other software is by being *imported*. (Dan: Does use of a library count as reuse?) For instance, let's say I'm doing a project in R that tracks change in something over time. I end up working with dates a lot (yesterday, a year ago, March 21 1981, and so on). Out of the box, R's support for this is only so-so. I could write a bunch of code to improve it, but instead I'll *import* Hadley Wickham's very nice ```lubridate``` library. Now ```lubridate`` is a *dependency* of my software, because I depend on it. I can reuse his code to make dealing with dates faster and easier. It's a bit like citation on steroids.
 
 If we wanted to do a great job of tracking how reused my software was, we'd want to measure three things:
 
@@ -245,7 +246,7 @@ If software is making an impact on research, we'd expect to see it cited in the 
 
 One solution is to write "software papers" that act as hooks for citations instead of the software itself. This doesn't try to change the current paper-oriented publication system, but rather leverage it. However, often these papers don't get cited either, and even more often they don't get written (and why should they? software shouldn't have to pretend to be something else to be cited). So while this approach has value, it's too mired in the past.
 
-A different, more radical solution is to mint DOIs for software, counting on the symbolic value "it has a DOI" to encourage better citation rates and better traceability of citation. This anticipates a new, more diverse publication landscape in which software and traditional papers coexist as first-class citizens. However, though this may pay off in the long term, for now software DOIs are uncommon--and often remain uncited even when they exist. While this approach has value, it's too dependent on the future.
+A different, more radical solution is to mint DOIs for software, counting on the symbolic value "it has a DOI" to encourage better citation rates and better traceability of citation. This anticipates a new, more diverse publication landscape in which software and traditional papers coexist as first-class citizens. However, though this may pay off in the long term, for now software DOIs are uncommon--and often remain uncited even when they exist. While this approach has value, it's too dependent on the future.  (Dan: I fairly strongly think this is the way things will go.)
 
 A third approach can combine the virtues of both of these: text-mining the literature to track mentions that indicate software reuse. This works within the currunt citation culture, but also treats software as the first-class scholarly output it deserves to be.
 
@@ -275,8 +276,7 @@ This approach has several important limitations:
 
 #### Future work
 
-Although Depsy's text-mining approach to assessing literature impact has some big holes that restrict it to primarily proof-of-concept use right now, it's got a lot of potential, and we've got big plans of future improvements. We're going to include papers that often serve as proxies for software name mentions, particularly those identified within CRAN as the author's prefered attribution. We're also going to incorporate more network information, using not just how many people have cited something, but *who*. Eventually we'll incorporate citation information into the software reuse network, building a comprehensive, heterogeneous impact map. Finally, we'll be working with publishers to text-mine larger subsets of the research literature.
-
+Although Depsy's text-mining approach to assessing literature impact has some big holes that restrict it to primarily proof-of-concept use right now, it's got a lot of potential, and we've got big plans of future improvements. We're going to include papers that often serve as proxies for software name mentions, particularly those identified within CRAN as the author's prefered attribution. We're also going to incorporate more network information, using not just how many people have cited something, but *who*. Eventually we'll incorporate citation information into the software reuse network, building a comprehensive, heterogeneous impact map. Finally, we'll be working with publishers to text-mine larger subsets of the research literature. (Dan: while text mining will always pick up mentions that are not cites, it will also alway overcount, while cites always will undercount.  I wonder if this range idea has value.)
 
 
 ## Person impact
@@ -336,6 +336,7 @@ TODO.
 - We count self citations and self-imports. Depending on how you look at it, this is a feature of a bug. Either way, it can have a significant affect, especially when dealing with low *n* as we often are.
 - we do our best to guess whether a package is a research package or not. Sometimes we get it wrong. Also, it's hard to know what this is for R; right now we consider all R packages to be academic.  
 - download numbers are notoriously imperfect. They are inflated by automatic downloads (continuous integration servers are a chief culprit) and deflated by downloading from mirrors, among other sources of flakiness.
+- somewhat obviously, this is currently limited to python and R, which is a subset of more general scientific software.
 
 # Data availability
 

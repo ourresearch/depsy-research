@@ -183,7 +183,6 @@ This approach has several important limitations:
 Although Depsy's text-mining approach to assessing literature impact has some big holes that restrict it to primarily proof-of-concept use right now, it's got a lot of potential, and we've got big plans of future improvements. We're going to include papers that often serve as proxies for software name mentions, particularly those identified within CRAN as the author's prefered attribution. We're also going to incorporate more network information, using not just how many people have cited something, but *who*. Eventually we'll incorporate citation information into the software reuse network, building a comprehensive, heterogeneous impact map. Finally, we'll be working with publishers to text-mine larger subsets of the research literature. (Dan: while text mining will always pick up mentions that are not cites, it will also alway overcount, while cites always will undercount.  I wonder if this range idea has value.)
 
 
-
 ## Person impact
 
 There are lots of ways to represent differing contributions among authors of a paper, including [author order](http://www.phdcomics.com/comics/archive.php?comicid=562), corresponding authorship, acknowledgements, and more explicit contribution statements.
