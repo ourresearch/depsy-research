@@ -71,55 +71,62 @@ To build this number, we'll need three steps, which are covered in detail below:
 
 #### Identify dependencies
 
-We'd like to find absolutely all of the code that uses a research software library.  Alas this is impossible -- most software lives only on private harddrives and servers, so we don't know that it exists, let alone that it depends on a given software library.
+Ideally, we'd like to find absolutely all of the code that reuses a given research software library.  Alas this is impossible -- most software lives only on private harddrives and servers, so we don't know that it exists, let alone that it depends on a given software library.
 
-That said, there's great news: more and more code is becoming Open Source, available for anyone to browse and search.  GitHub is by far the largest such repository, with over 9 million users and over 21.1 million repositories [[wikipedia]("https://en.wikipedia.org/wiki/GitHub")].  Finding dependencies on GitHub serves as a proxy for all dependencies. 
+That said, there's great news: more and more code is becoming Open Source, available for anyone to browse and search.  GitHub is by far the largest such repository, with over 9 million users and over 21.1 million repositories [[wikipedia]("https://en.wikipedia.org/wiki/GitHub")].  By analyzing how much a given software package is reused on GitHub, we can get a pretty good idea of how much that software is reused in general. 
 
-Luckily the dependency information for software libraries is also available and searchable, so we are able to add to our sample all of the times that libraries in the PyPI and CRAN networks depend on other libraries.
+We can also analyze the dependency information in the open source code of packages availale on PyPi and CRAN, the main software repositories for Python and R respecively.
 
-Our approach, then, is to find library dependencies within GitHub, PyPI, and CRAN.  The specifics of how we do this differ by language:
+So then we've got three places to look for software reused via imports:  GitHub, PyPI, and CRAN.  The specifics of how we do this differ by language:
 
 
-##### Finding dependencies on R libraries 
+##### Finding dependencies on R libraries: CRAN and GitHub
 
-CRAN makes it super easy to know which libraries depend on which other libraries.  Yay :)  The CRAN website lists reverse depencencies for each library (see [the CRAN page for knitr](https://cran.r-project.org/web/packages/knitr/) for what this looks like). We include the "Reverse depends" and "Reverse imports" fields, but not the "Reverse enhances" or "Reverse suggests" fields.
+The CRAN website lists reverse depencencies for each library (see [the CRAN page for knitr](https://cran.r-project.org/web/packages/knitr/) for what this looks like), so that part is easy. We count the "Reverse depends" and "Reverse imports" fields since those reflect actual use, but not the "Reverse enhances" or "Reverse suggests" fields since those are optional.
 
-We also wanted to find all the times that software in GitHub depends on an R library.  We started by getting a list of all R GitHub repositories using Google BigQuery's GitHub Archive at https://bigquery.cloud.google.com/table/githubarchive:github.timeline.  We exported results of the following query, which got all R repositories which had received push events sometime before Jan 1 2015 (the last date that the githubarchive:github has data)
-```
-    select
-      repository_url
-    from [githubarchive:github.timeline]
-    where
-        type="PushEvent"
-        and repository_language="R"
-    group by
-      repository_url
-    order by
-      repository_url
-```  
+We also wanted to find every time that a software project on GitHub uses an R library.  We started by getting a list of all R GitHub repositories using [Google BigQuery's GitHub Archive](https://bigquery.cloud.google.com/table/githubarchive:github.timeline) and exporting the results of [this query](https://github.com/Impactstory/depsy/blob/master/sql/bigquery_all_github_r.sql).
   
-  For each GitHub repository we downloaded its source code, extracted lines that included the words "library" or "requires" from files that end in R and R/Sweave/knitr filename extensions, discarded comments, and then used regular expressions to extract the library name.
+Then for each GitHub repository we downloaded its zipped source code, extracted lines that included the words "library" or "requires" from files that end in R and R/Sweave/knitr filename extensions, discarded comments, and then used regular expressions to extract the library name. [Here's the code that does that](https://github.com/Impactstory/depsy/blob/master/models/github_repo.py) if you'd like more details.
 
-##### Finding dependencies on Python libraries
-We want to know which Python libraries require which other Python libraries. This is more complicated to learn from PyPI than it was from CRAN, largely because the way to specify dependencies in a Python library distribution has changed over time, and we needed to find all the dependencies, no matter how they were specified.  So, to start with, we downloaded the source distribution of each PyPI library using its most recent release url listed on PyPI.  For the recently introduced "wheel" format", we extracted the list of required libraries from the package's metadata.json file; for other source distributions we extracted the list from the older requires.txt file.  When none of these files existed we parsed the package's setup.py file (TODO: confirm we did use setup.py into the final version).  
+##### Finding dependencies on Python libraries: PyPI and GitHub
 
-In all of these cases we recorded all libraries that were required with the base install, excluding ones that were used only by certain environments (Windows pywin for example) or auxilliary install options (like development or test installations).
+Building the Python dependency graph is a bit harder.
 
-Finally, we wanted to find all the times that sofware in GitHub depends on a Python library.  This starts off simple:  we got a list of all Python GitHub repositories, using Google BigQuery, as above with R.  For each GitHub repository we downloaded its source code.  From there, we looked for dependencies in two places to make sure we didn't miss anything.  First, if the software repository included a setup.py or requirements.txt file, we recorded the libraries listed therein.  Second, we looked within the python source code itself, extracting lines that included the words "import" from files that end in .py, discarded comments, and then used regular expressions to extract the import name.  We compared the import name to the source code directory tree.  If the import name was a subdirectory or a filename we assumed they were importing a local module, so we discarded the import.   
+To start with, we downloaded the source distribution of each PyPI library using its most recent release url listed on PyPI.  For the recently introduced ["wheel" format"](http://pythonwheels.com/), we extracted the list of required libraries from the package's metadata.json file. For other source distributions we extracted the list from the older requires.txt file.  
 
-The final task was mapping the import name to a PyPI library.  This was more complicated than you may expect -- certainly more complicated than we expected!  The approach we finalized on was to first run through all Python package on PyPI and extract the package or module name that each package specifies in its setup.py.  Sometimes the setup.py runs code to generate the value, in which case we ccouldn't extract it from the static setup.py file -- in these cases we scraped the highest level directory from http://pydoc.net.  See for example the python library called "python-igraph": it is imported as simply ```import igraph```, as can be derived by the top level directory [on its pydoc page](http://pydoc.net/Python/python-igraph).  We built a lookup from these import names back to the PyPI library names.  
+Python has a number of libraries we didn't to track: ones that come with a base Python installation, ones  used only by certain environments (Windows pywin for example), auxilliary install options (like development or test options). So we excluded these. That took care of finding all the dependencies in PyPI.
 
-Unfortunately, in some cases more than one PyPI library that uses the same import name (for example, pipeline, python-pipeline, and django-pipeline all distribute a package or module called "pipeline", as [PEP 423](https://www.python.org/dev/peps/pep-0423/#use-a-single-name) discusses).  To handle these cases we assign all dependencies to the PyPI library with the most downloads.  A limitation of the current approach is that we therefore do not identify GitHub-based imports for PyPI libraries with ambiguous import names that do not have the most downloads (0).  We do not calculate PageRank for libraries, but rather estimate their PageRank percentile from their download percentile.
+Next, we wanted to find all the times that sofware in GitHub depends on a Python library.  This starts off simple:  we got a list of all Python GitHub repositories, using Google BigQuery, as above with R.  For each GitHub repository we downloaded its source code, again just like we did with R.  
+
+From there, we looked for dependencies in two places to make sure we didn't miss anything.  First, if the software repository included a setup.py or the newer requirements.txt file, we recorded the libraries listed there.  However, we found that Python code often has dependencies *that are never explicitly specified*. We didn't want to miss these, so we used a second technique: actually reading the Python source code to find import statements.
+
+To do this, we extracting lines that included the word "import" from files that end in ```.py```. We discarded comments, then used a set of regular expressions to extract the import name from these lines (which, annoyingly, use a pretty diverse syntax).  Once we had the names of the imported libraries, we weren't done though--in Python, the import statement is often used to manipulate local code, as well as to bring in external dependencies. So we compared the import names we found to the source code directory tree.  If the import name was a subdirectory or a filename we assumed they were importing a local module, so we discarded the import. You can see  details of this in the [Python source file.](https://github.com/Impactstory/depsy/blob/master/models/pypi_package.py)
+
+The final task was mapping the import name to a PyPI library. This was harder than we'd hoped, because import names can be completely different from package names, one of the (many) [painful bits of Python's packaging system.](http://lucumr.pocoo.org/2012/6/22/hate-hate-hate-everywhere/). Even worse, in some cases more than one PyPI library  uses the *same* import name (for example, pipeline, python-pipeline, and django-pipeline all distribute a package or module called "pipeline", as [PEP 423](https://www.python.org/dev/peps/pep-0423/#use-a-single-name) discusses).
+
+So, the approach we finalized on was this:
+
+1. Run through all Python package on PyPI and extract the package or module name that each package specifies in its setup.py. That's it's import name. Sometimes the setup.py runs code to generate the value, in which case we ccouldn't extract it from the static setup.py file -- in these cases we made a best guess, and scraped the highest level directory from http://pydoc.net.  For example, check out the python library [python-igraph](https://pypi.python.org/pypi/python-igraph): its import name is actually ```igraph```, so you import it as ```import igraph```.  We built a lookup from these import names back to the PyPI library names.  
+2. If there is more than one PyPI package with the same import name, we figured out which one had the most downloads, then assign all uses to that package. Where these name collisions keep us from getting *any* data on imports (max 0), we estimate their PageRank percentile from their download percentile.
 
 #### Calculate PageRank
 
-We load the dependencies into Python's [igraph](http://depsy.org/package/python/python-igraph) library as a directed network, then calculate PageRank using the personal_pagerank method.  (You can play with it too -- just export the TODO:XXXX tables from our follower database, and run the code TODO:LLLLL here to import it into igraph.)
+We load the dependencies into Python's [igraph](http://depsy.org/package/python/python-igraph) library as a directed network, then calculate PageRank using the ```personal_pagerank``` method.  You can play with it too by exporting the two ```dep_nodes_ncol_reverse``` tables from the PostgreSQL database ([this script](https://github.com/Impactstory/depsy/blob/master/scripts/run_igraph.sh) can help).
 
 #### Display PageRank in a way that is interpretable
 
-The last step is to give the PageRank measure some context -- PageRank numbers tend to be small numbers like 1.3 * 10^-5^ and 1.7 * 10^-6^.  How can we interpret those?  Are those both high?  Low?  How do they compare to each other and other research software libraries?
+The last step is to give the PageRank measure some context. PageRank values are really hard to grok by themselves. What does it mean if I tell you a given package has a PageRank of 1.7 * 10<sup>-6</sup>?
 
-Depsy makes the PageRank value grokkable by transforming it into a number between 0 and 1000, and then also providing its percentile compared to other libraries.  We do this by dividing the PageRank score by the maximum PageRank score in its network (so Python libraries are compared to Python libraries, and R to R), taking the log10 transform, adding an offset so all numbers are positive, and then multiplying it by the scaling factor that zooms all pagerank values into the range 0 to 1000.  A library with a PageRank Score of 0 isn't depended on by any code, whereas a PageRank Score of 1000 is depended on heavily by a lot of projects, including a lot of important projects.
+So we make the PageRank value more understandable by transforming it into a number between 0 and 1000, and then also providing its percentile compared to other libraries.  
+
+There are a few steps to this. 
+
+1. We scale scores by the max score in the network by dividing PageRank score by the maximum PageRank score (Python libraries are compared to Python libraries, and R to R).
+2. We taking the log10 transform. The dependency graph exhibits properties of a [scale-free network](https://en.wikipedia.org/wiki/Scale-free_network), including an extremely skewed distribution. The log transform eases interpretation and plotting.
+3. We add an offset so all numbers are positive
+4. We  multiply everything by a scaling factor that places values into the range 0 to 1000.  
+
+So, after all this conditioning, we can see that a package with a PageRank Score of 0 isn't depended on by any code, whereas a PageRank Score of 1000 is depended on heavily by a lot of projects, including a lot of important projects. Even after the transformation, the value are quite skewed (TODO: plot).
 
 
 ### Citations
