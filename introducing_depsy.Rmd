@@ -46,6 +46,12 @@ library(RJDBC)
 ```
 
 ```{r get_data, echo=FALSE, results='hide', cache=TRUE}
+  
+# To access the database, you'll need  the PostgreSQL driver.
+# 1) go here and download the driver JAR file: https://jdbc.postgresql.org/download.html
+# 2) put the downloaded JAR in the same directory as this file.
+# 3) make sure the line below points to your newly-downloaded JAR file with the right name
+# 4) done!
 pgsql <- JDBC("org.postgresql.Driver", "postgresql-9.4-1203.jdbc4.jar", "`")
 my_db <- dbConnect(pgsql, 
                    "jdbc:postgresql://ec2-54-227-249-158.compute-1.amazonaws.com:6222/dh6mnd776vk3a?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory", 
