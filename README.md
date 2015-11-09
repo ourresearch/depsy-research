@@ -1,2 +1,3 @@
-# depsy-research
-Documentation and research output for Depsy (see https://github.com/impactstory/depsy for source of Depsy itself)
+# Depsy Research
+
+Here you'll find documentation and research findings related to [Depsy](http://depsy.org). In particular, check out the [research paper](https://github.com/Impactstory/depsy-research/blob/master/introducing_depsy.md) in progress.
