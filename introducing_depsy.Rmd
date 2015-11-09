@@ -109,17 +109,31 @@ glimpse(dp_all)
 
 # Introduction
 
-Depsy helps build the software-intensive science of the future by promoting credit for software as a fundamental building block of science.
+Today's cutting-edge science is built on an array of specialist research software. This research software is often as important as traditional scholarly papers--but it's not treated that way when it comes to funding and tenure. There, the traditional publish-or-perish, show-me-the-Impact-Factor system still rules.
 
-Depsy finds the impact of research software **packages** written in Python and R, and also impact of the **people** who write it.
+We need to fix that. We need to provide meaningful incentives for the scientist-developers who make important research software, so that we can keep doing important, software-driven science.
+
+Lots of things have to happen to support this change. Depsy is a shot at making one of those things happen: a system that tracks the impact of software in *software-native ways*.
+
+That means not just counting up citations to a hastily-written paper *about* the software, but actual mentions of *the software itself* in the literature. It means looking how software gets reused by other software, even when it's not cited at all. And it means understanding the full complexity of software authorship, where one project can involve hundreds of contributors in multiple roles that don't map to traditional paper authorship.
+
+Depsy doesn't do any of these things perfectly, and it's not supposed to. Instead, Depsy is a proof-of-concept to show that we can do them at all. The data and tools are there. We *can* measure and reward software impact, like we measure and reward the impact of papers. 
+
+Given that, it's not a question of *if* research software becomes a first-class scientific product, but *when* and *how*. Depsy is meant to encourage conversations about when and how. Hopefully it will prompt folks to improve Depsy, to build systems better than Depsy, and to (most importantly) build the cultural and political structures that can use these systems.
+
+
+## Related work
+
+related work goes here
+
+## Coverage
+
+Depsy tracks research software packages hosted on either [CRAN](https://cran.r-project.org/web/packages/) (the main [software repository](https://en.wikipedia.org/wiki/Software_repository) for the R programming language) or [PyPI](http://pypi.python.org) (the software repository for Python-language software).
 
 R is a language for doing statistics.  As such, almost all of its packages are written by academics, for academics, to do reasearch--so we consider all R software on Depsy to be research software. We cover the *`r dp_aca %>% filter(host=='cran') %>% nrow()`* R software packages available on [CRAN](https://cran.r-project.org/web/packages/), the main library repository for R.
 
 Python is a more general purpose programming language.  We try to establish whether a given Python package is research software by searching its metadata (package name, description, tags) for researchy-words (see [code on GitHub](https://github.com/Impactstory/depsy/blob/870c85ee4598643f496bca76e5a7dff994e53837/models/academic.py)). We cover all *`r dp_all %>% filter(host=='pypi') %>% nrow()`* active Python packages on [PyPI](http://pypi.python.org), Python's main package repository; of those, we count *`r dp_aca %>% filter(host=='pypi') %>% nrow()`* as research software.
 
-## Related work
-
-related work goes here
 
 ## Package impact
 
@@ -274,7 +288,7 @@ TODO
 
 # Data availability
 
-All Despy data is available for reuse through our API (see "View in Api" buttons on the package, person, and tag pages) and also though direct access to our read-only postgres database.  Connection details area available in the knitr source for this document.
+Everything in Depsy is open, and we encourage reuse of the data and code. You can use the API (see "View in Api" buttons on the package, person, and tag pages), or get larger-scale access via our read-only postgres database. The database connection details (plus an example of how to connect in R) are in [the Knitr source for this  paper](https://github.com/Impactstory/depsy-research/blob/master/introducing_depsy.Rmd).
 
 # Funding
 
