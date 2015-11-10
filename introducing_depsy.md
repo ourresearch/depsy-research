@@ -14,7 +14,7 @@ Heather Piwowar and Jason Priem
 
 # Introduction
 
-Today's cutting-edge science is built on an array of specialist research software. This research software is often as important as traditional scholarly papers--[but it's not treated that way when it comes to funding and tenure](http://sciencecodemanifesto.org/). There, the traditional publish-or-perish, show-me-the-Impact-Factor system still rules.
+Today's cutting-edge science is built on an array of specialist research software. This research software is often as important as traditional scholarly papers; moreso, it is often *essential* to the realization of scholarly papers, as very few research today does not rely on any software whatsoever--[but it's not treated that way when it comes to funding and tenure](http://sciencecodemanifesto.org/). There, the traditional publish-or-perish, show-me-the-Impact-Factor system still rules.
 
 We need to fix that. We need to provide meaningful incentives for the [scientist-developers](http://dirkgorissen.com/2012/03/26/the-researcher-programmer-a-new-species/) who make important research software, so that we can keep doing important, software-driven science.
 
@@ -55,6 +55,7 @@ R is a language for doing statistics.  As such, almost all of its packages are w
 
 Python is a more general purpose programming language.  We try to establish whether a given Python package is research software by searching its metadata (package name, description, tags) for researchy-words (see [code on GitHub](https://github.com/Impactstory/depsy/blob/870c85ee4598643f496bca76e5a7dff994e53837/models/academic.py)). We cover all *57243* active Python packages on [PyPI](http://pypi.python.org), Python's main package repository; of those, we count *4166* as research software.
 
+Most of [Julia](http://pkg.julialang.org/) packages are for (numerical) research. They give good usage statistics.
 
 ## Package impact
 
