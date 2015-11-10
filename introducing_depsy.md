@@ -57,7 +57,7 @@ Python is a more general purpose programming language.  We try to establish whet
 
 ## Package impact
 
-Depsy calculates impact along three dimensions (and a fourth, coming later, that will capture social signals like GitHub watchers and Stack Overflow discussions). The overall impact score of a package is calculated as the average of these three: **downloads** from software repositories, **software reuse** via reverse dependencies, and **literature reuse** via mentions within papers. 
+Depsy calculates impact along three dimensions (and a fourth, coming later, that will capture social signals like GitHub watchers and Stack Overflow discussions). The overall impact score of a package is calculated as the average of these three: **downloads** from software repositories, **software reuse** via reverse dependencies, and **literature reuse** via mentions within papers. (Dan: move this, or a more general version of this up to the intro - it's important to talk about what impact means at at the start.  Maybe talk about what can be thought of as impact, then what can be measured, then what actually is measured, at various places in the paper.)
 
 ### Downloads
 
@@ -185,11 +185,11 @@ Although Depsy's text-mining approach to assessing literature impact has some bi
 
 ## Person impact
 
-There are lots of ways to represent differing contributions among authors of a paper, including [author order](http://www.phdcomics.com/comics/archive.php?comicid=562), corresponding authorship, acknowledgements, and more explicit contribution statements.
+There are lots of ways to represent differing contributions among authors of a paper, including [author order](http://www.phdcomics.com/comics/archive.php?comicid=562), corresponding authorship, acknowledgements, and more explicit contribution statements. (Dan: maybe mention project credit here?  If so, may need to talk about the fact that all software contributions are embedded in just one of the 14 categories, and perhaps suggest how this might be refined.)
 
 Representation of software authorship has evolved, for the most part, seperately. So if we want to look at software authorship in an academic context, we need to translate software-native authorship representations into something academics can understand and work with.
 
-Depsy does this by calculating transitive credit for the authors of research software.  That means we look at the impact of the research software they've contributed to, times the size of the contribution they've made to each project, summed accross everything they've worked on. For more on transitive credit, see [Katz and Smith 2014](http://arxiv.org/abs/1407.5117).
+Depsy does this by calculating transitive credit for the authors of research software.  That means we look at the impact of the research software they've contributed to, times the size of the contribution they've made to each project, summed accross everything they've worked on. For more on transitive credit, see [Katz and Smith 2015](http://dx.doi.org/10.5334/jors.by).
 
 ### Authorship
 
@@ -204,7 +204,7 @@ First, we calculate the authors of software:
 
 Once we have a package's authors, we figure out their respective levels of contribution to the project:
 
-+ GitHub committers assigned a contribution-level proportional to their proportion of the software commits
++ GitHub committers assigned a contribution-level proportional to their proportion of the software commits (maybe talk about the fact that you have chosen number of commits as the key metric, rather than lines committed or anything else)Da
 + Authors who aren't GitHub committers assigned contribution-level equal to that of the most-contributing GitHub committer
 + GitHub owners are assigned a token 1% contribution-level
 + Credits are weighted such that the contribution-level assigned across all contributors on a package sums to 1.
