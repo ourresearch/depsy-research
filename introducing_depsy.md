@@ -45,6 +45,7 @@ Given that, it's not a question of *if* research software becomes a first-class 
     + James Howison's work is a good start
     + Dan Katz' work about transitive credit (Dan is happy to help - let him know what you want from him)
     + Another question is what to count - see https://danielskatzblog.wordpress.com/2015/10/29/software-metrics-what-to-count-and-how/  For example, Dan thinks it's important to count actual usage more than downloads, though this can be orthogonal to reuse.
+    + [This paper in Ideas in Ecology and Evolution](http://library.queensu.ca/ojs/index.php/IEE/article/view/5644) and [thoughtfull commentary](http://library.queensu.ca/ojs/index.php/IEE/article/view/5745) by Ethan White.
 
 ## Coverage
 
