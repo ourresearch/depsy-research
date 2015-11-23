@@ -52,7 +52,7 @@ Depsy tracks research software packages hosted on either [CRAN](https://cran.r-p
 
 R is a language for doing statistics.  As such, almost all of its packages are written by academics, for academics, to do reasearch--so we consider all R software on Depsy to be research software. We cover the *7057* R software packages available on [CRAN](https://cran.r-project.org/web/packages/), the main library repository for R.
 
-Python is a more general purpose programming language.  We try to establish whether a given Python package is research software by searching its metadata (package name, description, tags) for researchy-words (see [code on GitHub](https://github.com/Impactstory/depsy/blob/870c85ee4598643f496bca76e5a7dff994e53837/models/academic.py)). We cover all *57243* active Python packages on [PyPI](http://pypi.python.org), Python's main package repository; of those, we count *4166* as research software.
+Python is a more general purpose programming language.  We try to establish whether a given Python package is research software by searching its metadata (package name, description, tags) for researchy-words (see [code on GitHub](https://github.com/Impactstory/depsy/blob/870c85ee4598643f496bca76e5a7dff994e53837/models/academic.py)). We cover all *57243* active Python packages on [PyPI](http://pypi.python.org), Python's main package repository; of those, we count *4517* as research software.
 
 
 ## Package impact

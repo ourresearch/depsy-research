@@ -54,9 +54,9 @@ library(RJDBC)
 # 4) done!
 pgsql <- JDBC("org.postgresql.Driver", "postgresql-9.4-1203.jdbc4.jar", "`")
 my_db <- dbConnect(pgsql, 
-                   "jdbc:postgresql://ec2-54-227-249-158.compute-1.amazonaws.com:6222/dh6mnd776vk3a?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory", 
-                   password="p1ohgjb5peg9ro29fmogsp85k8g", 
-                   user="ufvsf5ekesp7ls")
+                   "jdbc:postgresql://ec2-54-83-205-154.compute-1.amazonaws.com:6482/ddstg43butl93u?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory", 
+                   password="p16bm4ts99dvf63p9mrsbub5of7", 
+                   user="u3181cudsmcf62")
 
 academic_packages = dbGetQuery(my_db, "
     select 
