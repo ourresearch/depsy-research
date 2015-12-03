@@ -40,6 +40,7 @@ Given that, it's not a question of *if* research software becomes a first-class 
     + https://github.com/metacran/cranlogs.app provides an API on CRAN download data.
     + Several blog posts and presentations on visualizing the CRAN dependency graph, including [this one](http://www.r-bloggers.com/differences-in-the-network-structure-of-cran-and-bioconductor/) and [this one](http://librestats.com/2012/05/17/visualizing-the-cran-graphing-package-dependencies/)
     + several apps to provide better interface to CRAN, with some impact information including http://www.crantastic.org/ and https://mran.revolutionanalytics.com/packages/ 
+    + This paper analyzes the R ecosystem: [On the Development and Distribution of R Packages: An Empirical Analysis of the R Ecosystem](http://dl.acm.org/citation.cfm?id=2797476)
     + There've been a few efforts to make systems that assess the scholarly impact of code. http://sciencetoolbox.org/ is one of the best.
 + There's a lot of writing about this. TODO add lots of it. 
     + James Howison's work is a good start
