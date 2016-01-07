@@ -91,18 +91,18 @@ Ideally, we'd like to find absolutely all of the code that reuses a given resear
 
 That said, there's great news: more and more code is becoming Open Source, available for anyone to browse and search.  GitHub is by far the largest such repository, with over 9 million users and over 21.1 million repositories [[wikipedia]("https://en.wikipedia.org/wiki/GitHub")].  By analyzing how much a given software package is reused on GitHub, we can get a pretty good idea of how much that software is reused in general. 
 
-We can also analyze the dependency information in the open source code of packages availale on PyPi and CRAN, the main software repositories for Python and R respecively.
+We can also analyze the dependency information in the open source code of packages available on PyPi and CRAN, the main software repositories for Python and R respectively.
 
 So then we've got three places to look for software reused via imports:  GitHub, PyPI, and CRAN.  The specifics of how we do this differ by language:
 
 
 ##### Finding dependencies on R libraries: CRAN and GitHub
 
-The CRAN website lists reverse depencencies for each library (see [the CRAN page for knitr](https://cran.r-project.org/web/packages/knitr/) for what this looks like), so that part is easy. We count the "Reverse depends" and "Reverse imports" fields since those reflect actual use, but not the "Reverse enhances" or "Reverse suggests" fields since those are optional.
+The CRAN website lists reverse dependencies for each library (see [the CRAN page for knitr](https://cran.r-project.org/web/packages/knitr/) for what this looks like), so that part is easy. We count the "Reverse depends" and "Reverse imports" fields since those reflect actual use, but not the "Reverse enhances" or "Reverse suggests" fields since those are optional.
 
 We also wanted to find every time that a software project on GitHub uses an R library.  We started by getting a list of all R GitHub repositories using [Google BigQuery's GitHub Archive](https://bigquery.cloud.google.com/table/githubarchive:github.timeline) and exporting the results of [this query](https://github.com/Impactstory/depsy/blob/master/sql/bigquery_all_github_r.sql).
   
-Then for each GitHub repository we downloaded its zipped source code, extracted lines that included the words "library" or "requires" from files that end in R and R/Sweave/knitr filename extensions, discarded comments, and then used regular expressions to extract the library name. [Here's the code that does that](https://github.com/Impactstory/depsy/blob/master/models/github_repo.py) if you'd like more details.
+Then for each GitHub repository, we downloaded its zipped source code, extracted lines that included the words "library" or "requires" from files that end in R and R/Sweave/knitr filename extensions, discarded comments, and then used regular expressions to extract the library name. [Here's the code that does that](https://github.com/Impactstory/depsy/blob/master/models/github_repo.py) if you'd like more details.
 
 ##### Finding dependencies on Python libraries: PyPI and GitHub
 
@@ -110,19 +110,19 @@ Building the Python dependency graph is a bit harder.
 
 To start with, we downloaded the source distribution of each PyPI library using its most recent release url listed on PyPI.  For the recently introduced ["wheel" format"](http://pythonwheels.com/), we extracted the list of required libraries from the package's metadata.json file. For other source distributions we extracted the list from the older requires.txt file.  
 
-Python has a number of libraries we didn't to track: ones that come with a base Python installation, ones  used only by certain environments (Windows pywin for example), auxilliary install options (like development or test options). So we excluded these. That took care of finding all the dependencies in PyPI.
+Python has a number of libraries we didn't attempt to track: ones that come with a base Python installation, ones used only by certain environments (Windows pywin for example), auxiliary install options (like development or test options). So we excluded these. That took care of finding all the dependencies in PyPI.
 
 Next, we wanted to find all the times that sofware in GitHub depends on a Python library.  This starts off simple:  we got a list of all Python GitHub repositories, using Google BigQuery, as above with R.  For each GitHub repository we downloaded its source code, again just like we did with R.  
 
 From there, we looked for dependencies in two places to make sure we didn't miss anything.  First, if the software repository included a setup.py or the newer requirements.txt file, we recorded the libraries listed there.  However, we found that Python code often has dependencies *that are never explicitly specified*. We didn't want to miss these, so we used a second technique: actually reading the Python source code to find import statements.
 
-To do this, we extracting lines that included the word "import" from files that end in ```.py```. We discarded comments, then used a set of regular expressions to extract the import name from these lines (which, annoyingly, use a pretty diverse syntax).  Once we had the names of the imported libraries, we weren't done though--in Python, the import statement is often used to manipulate local code, as well as to bring in external dependencies. So we compared the import names we found to the source code directory tree.  If the import name was a subdirectory or a filename we assumed they were importing a local module, so we discarded the import. You can see  details of this in the [Python source file.](https://github.com/Impactstory/depsy/blob/master/models/pypi_package.py)
+To do this, we extracting lines that included the word "import" from files that end in ```.py```. We discarded comments, then used a set of regular expressions to extract the import name from these lines (which, annoyingly, use a pretty diverse syntax).  Once we had the names of the imported libraries, we weren't done though--in Python, the import statement is often used to manipulate local code, as well as to bring in external dependencies. So we compared the import names we found to the source code directory tree.  If the import name was a subdirectory or a filename we assumed they were importing a local module, so we discarded the import. You can see details of this in the [Python source file.](https://github.com/Impactstory/depsy/blob/master/models/pypi_package.py)
 
-The final task was mapping the import name to a PyPI library. This was harder than we'd hoped, because import names can be completely different from package names, one of the (many) [painful bits of Python's packaging system.](http://lucumr.pocoo.org/2012/6/22/hate-hate-hate-everywhere/). Even worse, in some cases more than one PyPI library  uses the *same* import name (for example, pipeline, python-pipeline, and django-pipeline all distribute a package or module called "pipeline", as [PEP 423](https://www.python.org/dev/peps/pep-0423/#use-a-single-name) discusses).
+The final task was mapping the import name to a PyPI library. This was harder than we'd hoped, because import names can be completely different from package names, one of the (many) [painful bits of Python's packaging system.](http://lucumr.pocoo.org/2012/6/22/hate-hate-hate-everywhere/). Even worse, in some cases more than one PyPI library uses the *same* import name (for example, pipeline, python-pipeline, and django-pipeline all distribute a package or module called "pipeline", as [PEP 423](https://www.python.org/dev/peps/pep-0423/#use-a-single-name) discusses).
 
 So, the approach we finalized on was this:
 
-1. Run through all Python package on PyPI and extract the package or module name that each package specifies in its setup.py. That's it's import name. Sometimes the setup.py runs code to generate the value, in which case we ccouldn't extract it from the static setup.py file -- in these cases we made a best guess, and scraped the highest level directory from http://pydoc.net.  For example, check out the python library [python-igraph](https://pypi.python.org/pypi/python-igraph): its import name is actually ```igraph```, so you import it as ```import igraph```.  We built a lookup from these import names back to the PyPI library names.  
+1. Run through all Python packages on PyPI and extract the package or module name that each package specifies in its setup.py. That's its import name. Sometimes the setup.py runs code to generate the value, in which case we couldn't extract it from the static setup.py file -- in these cases we made a best guess, and scraped the highest level directory from http://pydoc.net.  For example, check out the python library [python-igraph](https://pypi.python.org/pypi/python-igraph): its import name is actually ```igraph```, so you import it as ```import igraph```.  We built a lookup from these import names back to the PyPI library names.  
 2. If there is more than one PyPI package with the same import name, we figured out which one had the most downloads, then assign all uses to that package. Where these name collisions keep us from getting *any* data on imports (max 0), we estimate their PageRank percentile from their download percentile.
 
 #### Calculate PageRank
@@ -138,16 +138,16 @@ So we make the PageRank value more understandable by transforming it into a numb
 There are a few steps to this. 
 
 1. We scale scores by the max score in the network by dividing PageRank score by the maximum PageRank score (Python libraries are compared to Python libraries, and R to R).
-2. We taking the log10 transform. The dependency graph exhibits properties of a [scale-free network](https://en.wikipedia.org/wiki/Scale-free_network), including an extremely skewed distribution. The log transform eases interpretation and plotting.
-3. We add an offset so all numbers are positive
-4. We  multiply everything by a scaling factor that places values into the range 0 to 10.  
+2. We take the log10 transform. The dependency graph exhibits properties of a [scale-free network](https://en.wikipedia.org/wiki/Scale-free_network), including an extremely skewed distribution. The log transform eases interpretation and plotting.
+3. We add an offset so all numbers that are positive
+4. We multiply everything by a scaling factor that places values into the range 0 to 10.  
 
 So, after all this conditioning, we can see that a package with a PageRank Score of 0 isn't depended on by any code, whereas a PageRank Score of 10.0 is depended on heavily by a lot of projects, including a lot of important projects. Even after the transformation, the values are quite skewed (TODO: plot).
 
 
 ### Literature reuse
 
-If software is making an impact on research, we'd expect to see it cited in the literature. And it is. But it's cited haphazardly--instead of formal citation, we often see things like "we used foo library for the figures" in papers.  In fact, Howison and Bullard find [only around a third of software mentions are formal citations](http://onlinelibrary.wiley.com/doi/10.1002/asi.23538/abstract). These informal citations don't show up in citation indexes, and so it's hard to trace--and hard for authors to get credit.
+If software is making an impact on research, we'd expect to see it cited in the literature. And it is. But it's cited haphazardly--instead of formal citation, we often see things like "we used foo library for the figures" in papers.  In fact, Howison and Bullard find [only around a third of software mentions are formal citations](http://onlinelibrary.wiley.com/doi/10.1002/asi.23538/abstract). These informal citations don't show up in citation indexes, and so it's hard to trace--and hard for software contributors to get credit.
 
 One solution is to write "software papers" that act as hooks for citations instead of the software itself. This doesn't try to change the current paper-oriented publication system, but rather leverage it. However, often these papers don't get cited either, and even more often they don't get written (and why should they? software shouldn't have to pretend to be something else to be cited). So while this approach has value, it's too mired in the past.
 
@@ -167,7 +167,7 @@ Package name with commonly-used words (```requests```, ```plot```, etc) have ver
 
 #### ADS
 
-We found ADS has poor precision when looking up software names, because it ignores puncutation.  This results in many incorrect matches, where it finds software names inside equations, for example.  
+We found ADS has poor precision when looking up software names, because it ignores punctuation.  This results in many incorrect matches, where it finds software names inside equations, for example.  
 
 So for ADS we instead search for a specific set of phrases that more conclusively identify software mentions. You can see an example in this search for [ADS mentions of the Astropy library](http://labs.adsabs.harvard.edu/adsabs/search/?q=(%20(=%22import%20astropy%22%20OR%20=%22github%20com%20astropy%22%20OR%20=%22pypi%20python%20org%20astropy%22%20OR%20=%22available%20in%20the%20astropy%20project%22%20OR%20=%22astropy%20a%20community-developed%22%20OR%20=%22library%20astropy%22%20OR%20=%22libraries%20astropy%22%20OR%20=%22package%20astropy%22%20OR%20=%22packages%20astropy%22%20OR%20=%22astropy%20package%22%20OR%20=%22astropy%20packages%22%20OR%20=%22astropy%20library%22%20OR%20=%22astropy%20libraries%22%20OR%20=%22astropy%20python%22%20OR%20=%22astropy%20software%22%20OR%20=%22astropy%20api%22%20OR%20=%22astropy%20coded%22%20OR%20=%22astropy%20new%20open-source%22%20OR%20=%22astropy%20open-source%22%20OR%20=%22open%20source%20software%20astropy%22%20OR%20=%22astropy%20modeling%20frameworks%22%20OR%20=%22astropy%20modeling%20environment%22%20OR%20=%22modeling%20framework%20astropy%22%20OR%20=%22astropy:%20sustainable%20software%22%20OR%20=%22astropy%20component-based%20modeling%20framework%22)%20-author:%22astropy%22)&year_from=1997&month_to=&year_to=2016). Despite a great deal of testing various phrase combinatinos, this approach still results in many incorrect hits for common-word package names, so we use the ratio approach described above for PMC to identify and exclude these, improving accuracy.  The fallback for common word package names for ADS is simply to return 0 hits because the URL searches we use for PMC are not precise enough. 
 
@@ -181,7 +181,7 @@ This approach has several important limitations:
 
 #### Future work
 
-Although Depsy's text-mining approach to assessing literature impact has some big holes that restrict it to primarily proof-of-concept use right now, it's got a lot of potential, and we've got big plans of future improvements. We're going to include papers that often serve as proxies for software name mentions, particularly those identified within CRAN as the author's prefered attribution. We're also going to incorporate more network information, using not just how many people have cited something, but *who*. Eventually we'll incorporate citation information into the software reuse network, building a comprehensive, heterogeneous impact map. Finally, we'll be working with publishers to text-mine larger subsets of the research literature. (Dan: while text mining will always pick up mentions that are not cites, it will also alway overcount, while cites always will undercount.  I wonder if this range idea has value.)
+Although Depsy's text-mining approach to assessing literature impact has some big holes that restrict it to primarily proof-of-concept use right now, it's got a lot of potential, and we've got big plans of future improvements. We're going to include papers that often serve as proxies for software name mentions, particularly those identified within CRAN as the author's preferred attribution. We're also going to incorporate more network information, using not just how many people have cited something, but *whom*. Eventually we'll incorporate citation information into the software reuse network, building a comprehensive, heterogeneous impact map. Finally, we'll be working with publishers to text-mine larger subsets of the research literature. (Dan: while text mining will always pick up mentions that are not cites, it will also always overcount, while cites will always undercount.  I wonder if this range idea has value.)
 
 
 ## Person impact
@@ -190,7 +190,7 @@ There are lots of ways to represent differing contributions among authors of a p
 
 Representation of software authorship has evolved, for the most part, seperately. So if we want to look at software authorship in an academic context, we need to translate software-native authorship representations into something academics can understand and work with.
 
-Depsy does this by calculating transitive credit for the authors of research software.  That means we look at the impact of the research software they've contributed to, times the size of the contribution they've made to each project, summed accross everything they've worked on. For more on transitive credit, see [Katz and Smith 2014](http://arxiv.org/abs/1407.5117).
+Depsy does this by calculating transitive credit for the authors of research software.  That means we look at the impact of the research software they've contributed to, times the size of the contribution they've made to each project, summed across everything they've worked on. For more on transitive credit, see [Katz and Smith 2014](http://arxiv.org/abs/1407.5117).
 
 ### Authorship
 
@@ -205,7 +205,7 @@ First, we calculate the authors of software:
 
 Once we have a package's authors, we figure out their respective levels of contribution to the project:
 
-+ GitHub committers assigned a contribution-level proportional to their proportion of the software commits
++ GitHub committers assigned a contribution-level proportional to their proportion of the software commits (all commits are equal?)
 + Authors who aren't GitHub committers assigned contribution-level equal to that of the most-contributing GitHub committer
 + GitHub owners are assigned a token 1% contribution-level
 + Credits are weighted such that the contribution-level assigned across all contributors on a package sums to 1.
@@ -223,7 +223,7 @@ The result of the calculations to this point is that each author has three perce
 
 ### Overall transitive credit
 
-Finally, we calculate an overall person-level score.  We get this by averaging the three componenet subscore percentiles, then, yes, you guessed it, then taking the percentile of *that* across all people.
+Finally, we calculate an overall person-level score.  We get this by averaging the three component subscore percentiles, then, yes, you guessed it, then taking the percentile of *that* across all people.
 
 It is a lot of percentiles, we agree.  :)  We tried several approaches, but ended up with percentiles mostly because 1) the data is very skewed, with different distributions across the subscores and 2) it provides instantly-accessible context for users of the scores.  Stay tuned for blog posts exploring this in more detail.
 
@@ -238,7 +238,7 @@ TODO.
 - we're missing GitHub links for many packages, which unfortunately means we are missing their detailed contributor/commit information. It's surprising how many packages have a GitHub repo but do not link to it in the package metadata. We attempted to link more by automatically comparing the contents of setup.py files on github and PyPI, but this unfortuantely provided many false matches so we aren't including those links until we can improve the recall.
 - we look for dependency information on all python and R GitHub repositories created before Jan 1 2015 (when the GitHub API changed, and Google Big Query changed their GitHub data structure).  
 - we include active packages, which means we've deleted those without source code available on CRAN/pypi, or in the case of pypi libraries with fewer than 50 downloads (affects about 100 packages).
-- We count self citations and self-imports. Depending on how you look at it, this is a feature of a bug. Either way, it can have a significant affect, especially when dealing with low *n* as we often are.
+- We count self citations and self-imports. Depending on how you look at it, this is a feature or a bug. Either way, it can have a significant effect, especially when dealing with low *n* as we often are.
 - we do our best to guess whether a package is a research package or not. Sometimes we get it wrong. Also, it's hard to know what this is for R; right now we consider all R packages to be academic.  
 - download numbers are notoriously imperfect. They are inflated by automatic downloads (continuous integration servers are a chief culprit) and deflated by downloading from mirrors, among other sources of flakiness.
 - somewhat obviously, this is currently limited to python and R, which is a subset of more general scientific software.
