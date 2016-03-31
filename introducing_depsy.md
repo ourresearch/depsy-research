@@ -69,7 +69,7 @@ Gathering download statistics is easy.  We gathered monthly download numbers for
 
 Quantifying software reuse is less easy.
 
-The main way software is reused by other software is by being *imported*. (Dan: Does use of a library count as reuse?) For instance, let's say I'm doing a project in R that tracks change in something over time. I end up working with dates a lot (yesterday, a year ago, March 21 1981, and so on). Out of the box, R's support for this is only so-so. I could write a bunch of code to improve it, but instead I'll *import* Hadley Wickham's very nice ```lubridate``` library. Now ```lubridate`` is a *dependency* of my software, because I depend on it. I can reuse his code to make dealing with dates faster and easier. It's a bit like citation on steroids.
+The main way software is reused by other software is by being *imported*. (Dan: Does use of a library count as reuse?) For instance, let's say I'm doing a project in R that tracks change in something over time. I end up working with dates a lot (yesterday, a year ago, March 21 1981, and so on). Out of the box, R's support for this is only so-so. I could write a bunch of code to improve it, but instead I'll *import* Hadley Wickham's very nice ```lubridate``` library. Now ```lubridate``` is a *dependency* of my software, because I depend on it. I can reuse his code to make dealing with dates faster and easier. It's a bit like citation on steroids.
 
 If we wanted to do a great job of tracking how reused my software was, we'd want to measure three things:
 
