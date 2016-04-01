@@ -151,7 +151,7 @@ If software is making an impact on research, we'd expect to see it cited in the 
 
 One solution is to write "software papers" that act as hooks for citations instead of the software itself. This doesn't try to change the current paper-oriented publication system, but rather leverage it. However, often these papers don't get cited either, and even more often they don't get written (and why should they? software shouldn't have to pretend to be something else to be cited). So while this approach has value, it's too mired in the past.
 
-A different, more radical solution is to mint DOIs for software, counting on the symbolic value "it has a DOI" to encourage better citation rates and better traceability of citation. This anticipates a new, more diverse publication landscape in which software and traditional papers coexist as first-class citizens. However, though this may pay off in the long term, for now software DOIs are uncommon--and often remain uncited even when they exist. While this approach has value, it's too dependent on the future.  (Dan: I fairly strongly think this is the way things will go.)
+A different, more radical solution is to mint DOIs for software, counting on the symbolic value "it has a DOI" to encourage better citation rates and better traceability of citation. This anticipates a new, more diverse publication landscape in which software and traditional papers coexist as first-class citizens. However, though this may pay off in the long term, for now software DOIs are uncommon--and often remain uncited even when they exist. While this approach has value, it's too dependent on the future.  Note that this is currently what the FORCE11 Software Citation Working Group is recommending in https://github.com/force11/force11-scwg (Dan: I fairly strongly think this is the way things will go.)
 
 A third approach can combine the virtues of both of these: text-mining the literature to track mentions that indicate software reuse. This works within the currunt citation culture, but also treats software as the first-class scholarly output it deserves to be.
 
@@ -190,7 +190,7 @@ There are lots of ways to represent differing contributions among authors of a p
 
 Representation of software authorship has evolved, for the most part, seperately. So if we want to look at software authorship in an academic context, we need to translate software-native authorship representations into something academics can understand and work with.
 
-Depsy does this by calculating transitive credit for the authors of research software.  That means we look at the impact of the research software they've contributed to, times the size of the contribution they've made to each project, summed accross everything they've worked on. For more on transitive credit, see [Katz and Smith 2014](http://arxiv.org/abs/1407.5117).
+Depsy does this by calculating transitive credit for the authors of research software.  That means we look at the impact of the research software they've contributed to, times the size of the contribution they've made to each project, summed accross everything they've worked on. For more on transitive credit, see [Katz and Smith 2015](http://doi.org/10.5334/jors.by).
 
 ### Authorship
 
