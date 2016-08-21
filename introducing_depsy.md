@@ -211,6 +211,12 @@ Once we have a package's authors, we figure out their respective levels of contr
 + Credits are weighted such that the contribution-level assigned across all contributors on a package sums to 1.
 
 
+/* COMMENT
+Might it make sense to upweight the maintainer(s)? For packages I wrote and maintain (none maintained on github by me, all of mine on R-forge, I typically add any contributors as ctb (finding a minor bug counts as a contribution for me). In spdep, I reckon that I've done > 90% of the work, but your algorithm is way off - the other way round for pixmap, which others wrote and I helped clean up. You could also look to using SVN logs to compute similar commit proportions - I have some code for this.
+
+Otherwise an excellent enterprise - thanks for all your work on this!
+*/
+
 ### Component scores
 
 We calculate research software impact subscore for downloads, software reuse, and literature citations for each author.  
